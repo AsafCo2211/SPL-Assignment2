@@ -68,21 +68,21 @@ public class SharedMatrix {
 
         acquireAllVectorReadLocks(currentVecs);
         try {
-            int numRows = currentVecs.length;
-            int numCols = currentVecs[0].length();
+            int n = currentVecs.length; // number of vectors
+            int m = currentVecs[0].length(); // length of each vector
 
             if (orientation == VectorOrientation.ROW_MAJOR) {
-                double[][] result = new double[numRows][numCols];
-                for (int i = 0; i < numRows; i++) {
-                    for (int j = 0; j < numCols; j++) {
+                double[][] result = new double[n][m];
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < m; j++) {
                         result[i][j] = currentVecs[i].get(j);
                     }
                 }
                 return result;
             } else {
-                double[][] result = new double[numCols][numRows];
-                for (int j = 0; j < numRows; j++) {
-                    for (int i = 0; i < numCols; i++) {
+                double[][] result = new double[m][n];
+                for (int j = 0; j < n; j++) {
+                    for (int i = 0; i < m; i++) {
                         result[i][j] = currentVecs[j].get(i);
                     }
                 }
@@ -95,11 +95,13 @@ public class SharedMatrix {
 
     public SharedVector get(int index) {
         // TODO: return vector at index
+
+        SharedVector[] refs = this.vectors;
         
-        if (index < 0 || index >= this.vectors.length) {
+        if (index < 0 || index >= refs.length) {
             throw new IndexOutOfBoundsException("error: Index out of bounds");
         }
-        return this.vectors[index];
+        return refs[index];
     }
 
     public int length() {
@@ -110,11 +112,13 @@ public class SharedMatrix {
 
     public VectorOrientation getOrientation() {
         // TODO: return orientation
+        
+        SharedVector[] refs = this.vectors;
 
-        if (this.vectors.length == 0) {
+        if (refs.length == 0) {
             throw new IllegalStateException("error: Matrix is empty");
         }
-        return this.vectors[0].getOrientation();
+        return refs[0].getOrientation();
     }
 
     private void acquireAllVectorReadLocks(SharedVector[] vecs) {
