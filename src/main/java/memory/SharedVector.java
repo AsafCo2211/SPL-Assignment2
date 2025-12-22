@@ -11,7 +11,20 @@ public class SharedVector {
 
     public SharedVector(double[] vector, VectorOrientation orientation) {
         // TODO: store vector data and its orientation
-        this.vector = vector;
+
+        if (vector == null) {
+        throw new IllegalArgumentException("error: vector cannot be null");
+        }
+        if (orientation == null) {
+            throw new IllegalArgumentException("error: orientation cannot be null");
+        }
+
+        this.vector = new double[vector.length];
+
+        for (int i = 0; i < vector.length; i++) {
+            this.vector[i] = vector[i];
+        }
+
         this.orientation = orientation; 
     }
 
@@ -19,6 +32,9 @@ public class SharedVector {
         // TODO: return element at index (read-locked)
         this.readLock();
         try {
+            if (index < 0 || index >= this.vector.length) {
+                throw new IndexOutOfBoundsException("error: Index out of bounds");
+            }   
             return this.vector[index];
         } finally {
             this.readUnlock();
@@ -188,6 +204,12 @@ public class SharedVector {
         // TODO: compute row-vector × matrix
 
         if (matrix == null || matrix.length() == 0) return;
+
+        try {
+            if (matrix.get(0).length() == 0) return;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("error: matrix internal structure is invalid");
+        }
 
         VectorOrientation matOri = matrix.getOrientation();       
      

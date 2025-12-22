@@ -107,6 +107,10 @@ public class SharedMatrix {
     public int length() {
         // TODO: return number of stored vectors
 
+        if (this.vectors == null) {
+            return 0;
+        }
+
         return this.vectors.length;
     }
 
