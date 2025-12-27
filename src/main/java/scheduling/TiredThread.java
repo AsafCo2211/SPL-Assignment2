@@ -57,6 +57,7 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
      */
     public void newTask(Runnable task) {
        // TODO
+        this.handoff.add(task);
     }
 
     /**
@@ -65,16 +66,59 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
      */
     public void shutdown() {
        // TODO
+       try{
+               this.handoff.put(POISON_PILL);
+       } catch (InterruptedException e) {
+               Thread.currentThread().interrupt();
+       }
     }
 
     @Override
     public void run() {
        // TODO
+       try {
+            while (alive.get()) {
+                // 1. Waiting for a task (the thread blocks here)
+                Runnable task = handoff.take();
+
+                // 2. Woken up! Measuring idle time
+                long now = System.nanoTime();
+                long idleDuration = now - idleStartTime.get();
+                timeIdle.addAndGet(idleDuration);
+
+                // 3. Checking for poison pill
+                if (task == POISON_PILL) {
+                    alive.set(false);
+                    break;
+                } else {
+                    // 4. Executing the task
+                    busy.set(true);
+                    long workStart = System.nanoTime();
+                    try {
+                        task.run();
+                    } catch (Exception e) {
+                        System.err.println("Worker " + id + " failed task: " + e.getMessage());
+                    } finally {
+                        // 5. Measuring work time and resetting the idle timer
+                        long workEnd = System.nanoTime();
+                        long workDuration = workEnd - workStart;
+                        timeUsed.addAndGet(workDuration);
+
+                        // Resetting state in preparation for the next idle period
+                        busy.set(false);
+                        idleStartTime.set(System.nanoTime());
+                    }
+                }
+            }
+       } catch (InterruptedException e) {
+            alive.set(false);
+       }
     }
 
     @Override
     public int compareTo(TiredThread o) {
         // TODO
-        return 0;
+
+        return Double.compare(this.getFatigue(), o.getFatigue());
     }
 }
