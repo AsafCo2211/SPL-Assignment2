@@ -8,13 +8,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 class TiredExecutorTest {
+
+    @Test
+    void testConstructorInvalidThreadCount() {
+        assertThrows(IllegalArgumentException.class, () -> new TiredExecutor(0), 
+            "Creating TiredExecutor with 0 threads should throw IllegalArgumentException");
+
+        assertThrows(IllegalArgumentException.class, () -> new TiredExecutor(-5), 
+            "Creating TiredExecutor with negative threads should throw IllegalArgumentException");
+    }
 
     @Test
     void testInitializationAndReport() {
         // Arrange: Create executor with exactly 3 threads
         int numThreads = 3;
+
         TiredExecutor executor = new TiredExecutor(numThreads);
 
         // Act: Get the internal status report
@@ -28,6 +37,16 @@ class TiredExecutorTest {
         
         // Assert: Verify it does not contain extra workers
         assertFalse(report.contains("Worker #3"), "Report should NOT contain Worker #3");
+    }
+
+    @Test
+    void testSubmitNullTask() {
+        // Arrange
+        TiredExecutor executor = new TiredExecutor(2);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> executor.submit(null), 
+            "Submitting a null task should throw IllegalArgumentException");
     }
 
     @Test
@@ -103,6 +122,15 @@ class TiredExecutorTest {
     }
 
     // --- Part 3: Group Execution (submitAll) ---
+    @Test
+    void testSubmitAllWithNullIterable() {
+        // Arrange
+        TiredExecutor executor = new TiredExecutor(2);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> executor.submitAll(null), 
+            "Submitting a null iterable to submitAll should throw IllegalArgumentException");
+    }
 
     @Test
     void testSubmitAllExecution() throws InterruptedException {

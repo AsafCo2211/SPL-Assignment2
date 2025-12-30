@@ -80,7 +80,7 @@ class LinearAlgebraEngineTest {
         ComputationNode leafB = createLeafNode(matB);
         ComputationNode root = createOpNode(ComputationNodeType.ADD, leafA, leafB);
 
-        assertDoesNotThrow(() -> engine.run(root));
+        assertThrows(IllegalArgumentException.class, () -> engine.run(root));
     }
 
     @Test
@@ -115,6 +115,21 @@ class LinearAlgebraEngineTest {
                 }
             }
         });
+    }
+
+    @Test
+    void testMultiplicationDimensionMismatch() {
+        // Fix: Use small matrices to avoid console spam.
+        // We expect errors to be printed by workers, but NO exception thrown by main thread.
+        LinearAlgebraEngine engine = new LinearAlgebraEngine(2);
+        double[][] matA = generateRandomMatrix(2, 3);
+        double[][] matB = generateRandomMatrix(4, 2); // Mismatch!
+
+        ComputationNode leafA = createLeafNode(matA);
+        ComputationNode leafB = createLeafNode(matB);
+        ComputationNode root = createOpNode(ComputationNodeType.MULTIPLY, leafA, leafB);
+
+        assertThrows(IllegalArgumentException.class, () -> engine.run(root));
     }
 
     @Test

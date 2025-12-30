@@ -1,8 +1,6 @@
 package scheduling;
 
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TiredExecutor {
@@ -13,6 +11,10 @@ public class TiredExecutor {
 
     public TiredExecutor(int numThreads) {
         // TODO
+        if (numThreads <= 0) {
+            throw new IllegalArgumentException("Number of threads must be positive.");
+        }
+
         this.workers = new TiredThread[numThreads];
         for (int i = 0; i < numThreads; i++) {
             TiredThread worker = new TiredThread(i, 0.5 + Math.random());
@@ -24,6 +26,9 @@ public class TiredExecutor {
 
     public void submit(Runnable task) {
         // TODO
+        if (task == null) {
+            throw new IllegalArgumentException("Task cannot be null.");
+        }
         try {
             // Find an available worker.
             TiredThread worker = idleMinHeap.take();
@@ -56,6 +61,9 @@ public class TiredExecutor {
     }
 
     public void submitAll(Iterable<Runnable> tasks) {
+        if (tasks == null) {
+            throw new IllegalArgumentException("Tasks cannot be null.");
+        }
         // TODO: submit tasks one by one and wait until all finish
         AtomicInteger tasksCount = new AtomicInteger(0);
         Object lock = new Object();

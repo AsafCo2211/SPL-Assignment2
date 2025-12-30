@@ -39,6 +39,33 @@ class TiredThreadTest {
     }
 
     @Test
+    void testNewTaskNull() {
+        // Arrange
+        TiredThread worker = new TiredThread(2, 1.0);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> worker.newTask(null),
+            "Adding a null task should throw IllegalArgumentException");
+    }
+
+    @Test
+    void testNewTaskAfterShutdown() throws InterruptedException {
+        // Arrange
+        TiredThread worker = new TiredThread(3, 1.0);
+        worker.start();
+        worker.shutdown(); // Request shutdown
+
+        // wait for the thread to finish
+        worker.join();
+
+        // Act & Assert
+        // After shutdown, adding a new task should fail
+        Runnable dummyTask = () -> {};
+        assertThrows(IllegalStateException.class, () -> worker.newTask(dummyTask),
+            "Adding a task after shutdown should throw IllegalStateException");
+    }
+
+    @Test
     void testNewTaskQueueFull() {
         // Arrange
         TiredThread worker = new TiredThread(2, 1.0);
@@ -257,6 +284,16 @@ class TiredThreadTest {
             "Fatigue should be exactly timeUsed * fatigueFactor");
         
         worker.shutdown();
+    }
+
+    @Test
+    void compareToNull() {
+        // Arrange
+        TiredThread worker = new TiredThread(21, 2.0);
+        worker.shutdown();
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> worker.compareTo(null), 
+            "Comparing to null should throw NullPointerException");
     }
 
     @Test

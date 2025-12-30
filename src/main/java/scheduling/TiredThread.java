@@ -57,6 +57,12 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
      */
     public void newTask(Runnable task) {
        // TODO
+         if (task == null) {
+                throw new IllegalArgumentException("Task cannot be null");
+        }
+        if (!alive.get()) {
+                throw new IllegalStateException("Cannot assign task to a stopped worker");
+        }
         this.handoff.add(task);
     }
 
@@ -118,6 +124,9 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
     @Override
     public int compareTo(TiredThread o) {
         // TODO
+        if (o == null) {
+            throw new NullPointerException("Cannot compare to null");
+        }
 
         return Double.compare(this.getFatigue(), o.getFatigue());
     }
