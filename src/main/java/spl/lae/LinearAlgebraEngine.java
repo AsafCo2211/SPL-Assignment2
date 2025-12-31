@@ -89,6 +89,10 @@ public class LinearAlgebraEngine {
             throw new IllegalArgumentException("Illegal operation: dimensions mismatch");
         }
 
+        if (leftMatrix.getOrientation() != rightMatrix.getOrientation()) {
+            throw new IllegalArgumentException("Illegal operation: orientations mismatch");
+        }
+
         List<Runnable> tasks = new java.util.LinkedList<>();
 
         for (int i = 0; i < leftMatrix.length(); i++) {
