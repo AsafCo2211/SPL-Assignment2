@@ -110,6 +110,13 @@ public class TiredExecutor {
 
     public synchronized String getWorkerReport() {
         // TODO: return readable statistics for each worker
+
+        double fatiguesSum = 0;
+        for (TiredThread worker : workers) {
+            fatiguesSum += worker.getFatigue();   
+        }
+        double fatiguesAverage = fatiguesSum / workers.length;
+        double fairnessValue = 0;
         
         StringBuilder report = new StringBuilder();
         report.append("------------------------------------------------------------\n");
@@ -122,7 +129,10 @@ public class TiredExecutor {
             worker.getTimeIdle(),    
             worker.getFatigue()
             ));
+
+            fairnessValue += (worker.getFatigue() - fatiguesAverage) * (worker.getFatigue() - fatiguesAverage);
         }
+        report.append(String.format("\nFairness: %.2f \n", fairnessValue));
         report.append("------------------------------------------------------------\n");
         return report.toString();
     }   
