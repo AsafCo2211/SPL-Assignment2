@@ -11,3 +11,6 @@ target/
 
 # --- Mac OS ---
 .DS_Store
+# --- Output written by local runs ---
+*.out.json
+output.json
