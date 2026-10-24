@@ -10,7 +10,6 @@ public class SharedVector {
     private ReadWriteLock lock = new java.util.concurrent.locks.ReentrantReadWriteLock();
 
     public SharedVector(double[] vector, VectorOrientation orientation) {
-        // TODO: store vector data and its orientation
 
         if (vector == null) {
         throw new IllegalArgumentException("error: vector cannot be null");
@@ -29,7 +28,6 @@ public class SharedVector {
     }
 
     public double get(int index) {
-        // TODO: return element at index (read-locked)
         this.readLock();
         try {
             if (index < 0 || index >= this.vector.length) {
@@ -42,7 +40,6 @@ public class SharedVector {
     }
 
     public int length() {
-        // TODO: return vector length
 
          this.readLock();
         try {
@@ -53,7 +50,6 @@ public class SharedVector {
     }
 
     public VectorOrientation getOrientation() {
-        // TODO: return vector orientation
         
         this.readLock();
         try {
@@ -64,31 +60,26 @@ public class SharedVector {
     }
 
     public void writeLock() {
-        // TODO: acquire write lock
 
         lock.writeLock().lock();    
     }
 
     public void writeUnlock() {
-        // TODO: release write lock
 
         lock.writeLock().unlock();
     }
 
     public void readLock() {
-        // TODO: acquire read lock
 
         lock.readLock().lock();
     }
 
     public void readUnlock() {
-        // TODO: release read lock
 
         lock.readLock().unlock();
     }
 
     public void transpose() {
-        // TODO: transpose vector
 
         this.writeLock();
         try {
@@ -103,7 +94,6 @@ public class SharedVector {
     }
 
     public void add(SharedVector other) {
-        // TODO: add two vectors
 
         if (other == null) {
             throw new IllegalArgumentException("error: Illegal operation: null vector");
@@ -150,7 +140,6 @@ public class SharedVector {
     }
 
     public void negate() {
-        // TODO: negate vector
 
         this.writeLock();
         try {
@@ -163,7 +152,6 @@ public class SharedVector {
     }
 
     public double dot(SharedVector other) {
-        // TODO: compute dot product (row · column)
 
         if (other == null) {
             throw new IllegalArgumentException("error: Illegal operation: null vector");
@@ -201,7 +189,6 @@ public class SharedVector {
     }
 
     public void vecMatMul(SharedMatrix matrix) {
-        // TODO: compute row-vector × matrix
 
         if (matrix == null || matrix.length() == 0) return;
 

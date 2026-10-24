@@ -276,10 +276,9 @@ class TiredExecutorTest {
         System.out.println(report);
 
         // Assert: 
-        // We verify "Fairness" by checking that NO worker remained idle (Time Used: 0).
-        // In the report format: "Time Used: 0 " implies a worker did nothing.
-        // Note: We search for "Time Used: 0 " with a trailing space to avoid matching numbers like "10" or "205".
-        assertFalse(report.contains("Time Used: 0 "), 
+        // We verify "Fairness" by checking that NO worker remained idle:
+        // a worker that did nothing reports "busy 0.00 ms".
+        assertFalse(report.matches("(?s).*busy\\s+0\\.00 ms.*"), 
             "Distribution failure: All workers should have participated in the work. " +
             "If a worker has 0 time used, the priority queue is likely ignoring them.");
 

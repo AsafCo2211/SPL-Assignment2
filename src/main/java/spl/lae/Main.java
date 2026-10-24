@@ -5,7 +5,6 @@ import parser.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-      // TODO: main
 
       // Read arguments
       int numThreads = Integer.parseInt(args[0]);

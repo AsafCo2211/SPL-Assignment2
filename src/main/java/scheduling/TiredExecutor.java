@@ -12,7 +12,6 @@ public class TiredExecutor {
     private final AtomicInteger inFlight = new AtomicInteger(0);
 
     public TiredExecutor(int numThreads) {
-        // TODO
         this.workers = new TiredThread[numThreads];
         for (int i = 0; i < numThreads; i++) {
             TiredThread worker = new TiredThread(i, 0.5 + Math.random());
@@ -23,7 +22,6 @@ public class TiredExecutor {
     }
 
     public void submit(Runnable task) {
-        // TODO
         try {
             // Find an available worker.
             TiredThread worker = idleMinHeap.take();
@@ -56,7 +54,6 @@ public class TiredExecutor {
     }
 
     public void submitAll(Iterable<Runnable> tasks) {
-        // TODO: submit tasks one by one and wait until all finish
         AtomicInteger tasksCount = new AtomicInteger(0);
         Object lock = new Object();
 
@@ -85,13 +82,11 @@ public class TiredExecutor {
                     Thread.currentThread().interrupt();
                     break;
                 }
-                
-            }    
+            }
         }
     }
 
     public void shutdown() throws InterruptedException {
-        // TODO
         for (TiredThread worker : workers) {
             worker.shutdown();
         }
@@ -101,19 +96,18 @@ public class TiredExecutor {
     }
 
     public synchronized String getWorkerReport() {
-        // TODO: return readable statistics for each worker
         
         StringBuilder report = new StringBuilder();
         report.append("------------------------------------------------------------\n");
         report.append("Worker Report (Fairness & Fatigue):\n");
         for (TiredThread worker : workers) {
-            report.append(String.format("Worker #%d [%s]: \t Time Used: %d \t Time Idle: %d \t Total Fatigue: %.2f\n",
-            worker.getWorkerId(),    
-            worker.getName(),        
-            worker.getTimeUsed(),    
-            worker.getTimeIdle(),    
-            worker.getFatigue()
-            ));
+            // Times are measured in nanoseconds; shown in milliseconds.
+            report.append(String.format("Worker #%d [%s]:  busy %8.2f ms   idle %8.2f ms   fatigue %8.2f%n",
+                    worker.getWorkerId(),
+                    worker.getName(),
+                    worker.getTimeUsed() / 1e6,
+                    worker.getTimeIdle() / 1e6,
+                    worker.getFatigue() / 1e6));
         }
         report.append("------------------------------------------------------------\n");
         return report.toString();

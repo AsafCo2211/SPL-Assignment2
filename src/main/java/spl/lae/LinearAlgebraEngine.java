@@ -13,12 +13,10 @@ public class LinearAlgebraEngine {
     private TiredExecutor executor;
 
     public LinearAlgebraEngine(int numThreads) {
-        // TODO: create executor with given thread count
         this.executor = new TiredExecutor(numThreads);
     }
 
     public ComputationNode run(ComputationNode computationRoot) {
-        // TODO: resolve computation tree step by step until final matrix is produced
 
         try {
         ComputationNode resolvableNode = computationRoot.findResolvable();
@@ -39,8 +37,6 @@ public class LinearAlgebraEngine {
     }
 
     public void loadAndCompute(ComputationNode node) {
-        // TODO: load operand matrices
-        // TODO: create compute tasks & submit tasks to executor
 
         // load operand matrices
         List<ComputationNode> children = node.getChildren();
@@ -65,7 +61,6 @@ public class LinearAlgebraEngine {
     }
 
     public List<Runnable> createAddTasks() {
-        // TODO: return tasks that perform row-wise addition
         
         if (leftMatrix.length() != rightMatrix.length()) {
             throw new IllegalArgumentException("Matrices have different number of rows for addition.");
@@ -86,7 +81,6 @@ public class LinearAlgebraEngine {
     }
 
     public List<Runnable> createMultiplyTasks() {
-        // TODO: return tasks that perform row × matrix multiplication
         List<Runnable> tasks = new java.util.LinkedList<>();
         for (int i = 0; i < leftMatrix.length(); i++) {
             SharedVector leftRow = leftMatrix.get(i);
@@ -99,7 +93,6 @@ public class LinearAlgebraEngine {
     }
 
     public List<Runnable> createNegateTasks() {
-        // TODO: return tasks that negate rows
         List<Runnable> tasks = new java.util.LinkedList<>();
         for (int i = 0; i < leftMatrix.length(); i++) {
             SharedVector leftRow = leftMatrix.get(i);
@@ -112,7 +105,6 @@ public class LinearAlgebraEngine {
     }
 
     public List<Runnable> createTransposeTasks() {
-        // TODO: return tasks that transpose rows
         List<Runnable> tasks = new java.util.LinkedList<>();
         for (int i = 0; i < leftMatrix.length(); i++) {
             SharedVector leftRow = leftMatrix.get(i);
@@ -126,7 +118,6 @@ public class LinearAlgebraEngine {
     }
 
     public String getWorkerReport() {
-        // TODO: return summary of worker activity
         return executor.getWorkerReport();
     }
 }

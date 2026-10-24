@@ -56,7 +56,6 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
      * it throws IllegalStateException.
      */
     public void newTask(Runnable task) {
-       // TODO
         this.handoff.add(task);
     }
 
@@ -65,7 +64,6 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
      * Inserts a poison pill so the worker wakes up and exits.
      */
     public void shutdown() {
-       // TODO
        try{
                this.handoff.put(POISON_PILL);
        } catch (InterruptedException e) {
@@ -75,7 +73,6 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
 
     @Override
     public void run() {
-       // TODO
        try {
             while (alive.get()) {
                 // 1. Waiting for a task (the thread blocks here)
@@ -117,7 +114,6 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
 
     @Override
     public int compareTo(TiredThread o) {
-        // TODO
 
         return Double.compare(this.getFatigue(), o.getFatigue());
     }
