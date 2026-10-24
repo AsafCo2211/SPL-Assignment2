@@ -4,6 +4,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TiredExecutor {
 
@@ -53,8 +54,16 @@ public class TiredExecutor {
         }
     }
 
+    /**
+     * Submits every task, waits until all of them have finished, and rethrows
+     * the first failure, if any. Workers survive a failing task, so without
+     * this a failed row operation (e.g. a dimension mismatch detected inside
+     * the task) would be silently dropped and the caller would carry on with
+     * a partially computed matrix.
+     */
     public void submitAll(Iterable<Runnable> tasks) {
         AtomicInteger tasksCount = new AtomicInteger(0);
+        AtomicReference<RuntimeException> firstFailure = new AtomicReference<>();
         Object lock = new Object();
 
         for (Runnable task : tasks) {
@@ -63,6 +72,8 @@ public class TiredExecutor {
             Runnable wrappedTasks = () -> {
                 try {
                     task.run();
+                } catch (RuntimeException e) {
+                    firstFailure.compareAndSet(null, e);
                 } finally {
                     if (tasksCount.decrementAndGet() == 0) {
                         synchronized (lock) {
@@ -83,6 +94,11 @@ public class TiredExecutor {
                     break;
                 }
             }
+        }
+
+        RuntimeException failure = firstFailure.get();
+        if (failure != null) {
+            throw failure;
         }
     }
 

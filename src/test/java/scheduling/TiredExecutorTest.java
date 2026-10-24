@@ -201,10 +201,12 @@ class TiredExecutorTest {
         }
 
         // Act & Assert
-        // This is the critical check: submitAll must NOT hang forever even if tasks fail.
-        // It relies on the 'finally' block in submitAll to decrement the counter regardless of success/failure.
-        assertDoesNotThrow(() -> executor.submitAll(tasks), 
-            "submitAll should return normally even if some tasks throw exceptions");
+        // submitAll must not hang when tasks fail (the 'finally' block in
+        // submitAll decrements the counter either way), must still run the
+        // other tasks, and must report the failure instead of swallowing it.
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> executor.submitAll(tasks),
+            "submitAll should report a failed task to the caller");
+        assertTrue(thrown.getMessage().matches("Task [13] failed!"));
 
         // Verify that the 3 successful tasks actually finished
         assertEquals(3, successCounter.get(), "The 3 valid tasks should have completed successfully");

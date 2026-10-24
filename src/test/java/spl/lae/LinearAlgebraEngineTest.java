@@ -70,8 +70,9 @@ class LinearAlgebraEngineTest {
 
     @Test
     void testAdditionDimensionMismatch() {
-        // Fix: Use small matrices to avoid console spam.
-        // We expect errors to be printed by workers, but NO exception thrown by main thread.
+        // Same number of rows, different number of columns: the mismatch is
+        // only detected inside the row tasks. It used to be swallowed by the
+        // workers and run() returned the unchanged left matrix as a result.
         LinearAlgebraEngine engine = new LinearAlgebraEngine(2);
         double[][] matA = generateRandomMatrix(2, 2);
         double[][] matB = generateRandomMatrix(2, 3); // Mismatch!
@@ -80,7 +81,7 @@ class LinearAlgebraEngineTest {
         ComputationNode leafB = createLeafNode(matB);
         ComputationNode root = createOpNode(ComputationNodeType.ADD, leafA, leafB);
 
-        assertDoesNotThrow(() -> engine.run(root));
+        assertThrows(IllegalArgumentException.class, () -> engine.run(root));
     }
 
     @Test
