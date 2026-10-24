@@ -73,7 +73,16 @@ public class ComputationNode {
      * Effectively, this converts n-ary operations (n > 2) into binary operations.
      */
     public void associativeNesting() {
-        if (children != null && children.size() > 2) {
+        if (children == null) {
+            return;
+        }
+        // Nest the whole tree, not just this node: the engine reads only the
+        // first two operands of a node, so an un-nested "+" with three
+        // operands deeper in the tree used to silently drop the third.
+        for (ComputationNode child : children) {
+            child.associativeNesting();
+        }
+        if (children.size() > 2) {
             ComputationNode lastChild = children.remove(children.size() - 1);
             ComputationNode newNode = new ComputationNode(nodeType, children);
             children = List.of(newNode, lastChild);
